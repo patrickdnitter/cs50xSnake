@@ -8,10 +8,13 @@ def main():
 
     running = True
     while running:
+        if pygame.event.peek(pygame.QUIT): # Fast Exit if there is a Event that wants to quit the game
+            running = False
+            continue
+
         # Functionality for queued events
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
+            pass
 
         screen.fill("blue") # Color the screen blue
 
