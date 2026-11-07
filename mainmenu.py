@@ -42,6 +42,22 @@ class MainMenu(GameMode):
         self.highscore_menu = pygame.Surface(screen.get_size())
         self.highscore_menu.fill("White")
 
+        # Create Highscore Buttons
+        self.highscore_back = button.Button(button_x_center, 400, "Back", self.back_to_main_menu)
+
+        # Connect Buttons to HighscoreMenu
+        self.highscore_back.draw_button(self.highscore_menu)
+
+        # Create OptionsMenu
+        self.options_menu = pygame.Surface(screen.get_size())
+        self.options_menu.fill("White")
+
+        # Create Options Buttons
+        self.options_back = button.Button(button_x_center, 400, "Back", self.back_to_main_menu)
+
+        # Connect Buttons to OptionsMenu
+        self.options_back.draw_button(self.options_menu)
+
 
     def start_game(self):
         print("Start Game")
@@ -50,12 +66,11 @@ class MainMenu(GameMode):
 
     def highscore(self):
         print("Highscore")
-        # TODO Render Highscore Menu
         self.main_menu_state = MainMenuState.Highscore
 
     def options(self):
         print("Options")
-        # TODO Render Options Menu
+        self.main_menu_state = MainMenuState.Options
 
     def quit(self):
         print("Quit")
@@ -78,10 +93,15 @@ class MainMenu(GameMode):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         mouse_pos = pygame.mouse.get_pos()
-                        self.start_game_button.click(mouse_pos)
-                        self.highscore_button.click(mouse_pos)
-                        self.options_button.click(mouse_pos)
-                        self.quit_button.click(mouse_pos)
+                        if self.main_menu_state == MainMenuState.MainMenu:
+                            self.start_game_button.click(mouse_pos)
+                            self.highscore_button.click(mouse_pos)
+                            self.options_button.click(mouse_pos)
+                            self.quit_button.click(mouse_pos)
+                        elif self.main_menu_state == MainMenuState.Highscore:
+                            self.highscore_back.click(mouse_pos)
+                        elif self.main_menu_state == MainMenuState.Options:
+                            self.options_back.click(mouse_pos)
 
             # Render Menu
             match self.main_menu_state:
@@ -89,6 +109,8 @@ class MainMenu(GameMode):
                     self.gamestate.getScreen().blit(self.main_menu, (0, 0))
                 case MainMenuState.Highscore:
                     self.gamestate.getScreen().blit(self.highscore_menu, (0, 0))
+                case MainMenuState.Options:
+                    self.gamestate.getScreen().blit(self.options_menu, (0, 0))
 
 
             # Update the current surface
