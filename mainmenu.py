@@ -1,7 +1,16 @@
-import button
+from enum import Enum
 from gamemode import GameMode
+
+import button
 import pygame
 
+from gamestate import GameState
+
+
+class MainMenuState(Enum):
+    MainMenu = 0
+    Highscore = 1
+    Options = 2
 
 class MainMenu(GameMode):
 
@@ -10,6 +19,7 @@ class MainMenu(GameMode):
         super().__init__(gamestate)
 
         screen = gamestate.getScreen()
+        self.main_menu_state = MainMenuState.MainMenu
 
         # Create MainMenu
         self.main_menu = pygame.Surface(screen.get_size())
@@ -28,6 +38,11 @@ class MainMenu(GameMode):
         self.options_button.draw_button(self.main_menu)
         self.quit_button.draw_button(self.main_menu)
 
+        # Create HighscoreMenu
+        self.highscore_menu = pygame.Surface(screen.get_size())
+        self.highscore_menu.fill("White")
+
+
     def start_game(self):
         print("Start Game")
         self.setRunning(False)
@@ -36,6 +51,7 @@ class MainMenu(GameMode):
     def highscore(self):
         print("Highscore")
         # TODO Render Highscore Menu
+        self.main_menu_state = MainMenuState.Highscore
 
     def options(self):
         print("Options")
@@ -44,6 +60,10 @@ class MainMenu(GameMode):
     def quit(self):
         print("Quit")
         self.setRunning(False)
+
+    def back_to_main_menu(self):
+        print("Back to Main Menu")
+        self.main_menu_state = MainMenuState.MainMenu
 
     def gameloop(self):
         while self.getRunning():
@@ -64,7 +84,12 @@ class MainMenu(GameMode):
                         self.quit_button.click(mouse_pos)
 
             # Render Menu
-            self.gamestate.getScreen().blit(self.main_menu, (0, 0))
+            match self.main_menu_state:
+                case MainMenuState.MainMenu:
+                    self.gamestate.getScreen().blit(self.main_menu, (0, 0))
+                case MainMenuState.Highscore:
+                    self.gamestate.getScreen().blit(self.highscore_menu, (0, 0))
+
 
             # Update the current surface
             pygame.display.flip()
