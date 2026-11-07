@@ -22,8 +22,6 @@ Step 2: Learn the documentation at https://www.pygame.org/docs/. I wrote a 9 Pag
 
 I could find that might be useful, when working and gave comments to their functionality for a faster lookup, than the original site.
 
-Source https://www.pygame.org/docs/
-
 
 
 Step 3: Watching Videos to get a feel for pygame and best practices because some of the Function do simular things or default to another.
@@ -46,21 +44,37 @@ Gameloop:
 
 
 
-Implementation notes
+Implementation notes in Google Docs
+
+Process Input notes in Google Docs
+
+Collision notes in Google Docs
+
+Movement notes in Google Docs
+
+Draw screen notes in Google Docs
 
 
 
-Process Input notes
-
-Collision notes
-
-Movement notes
-
-Draw screen notes
-
-
-
-TO-DO:
+Implementation Process:
 
 class button 			https://www.youtube.com/watch?v=jyrP0dDGqgY
+
+class button allows to create multiple Buttons with just a Basic class
+
+Problem: It makes the main function very cluttered to do everything in there and some functions that Buttons might do are not accessable from 
+
+the Buttons.
+
+My Solution: Using my Knowledge from Unreal Engine I will create two classes GameMode and GameState.
+
+
+
+class gamemode takes care of the logistics behind a stage in a game, every stage like MainMenu and Game get their own gamemode
+
+class gamestate is the place to store the most important information, there is only one of them in the whole Project
+
+
+
+
 
