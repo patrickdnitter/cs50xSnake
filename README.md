@@ -62,7 +62,7 @@ class button 			https://www.youtube.com/watch?v=jyrP0dDGqgY
 
 class button allows to create multiple Buttons with just a Basic class
 
-Problem: It makes the main function very cluttered to do everything in there and some functions that Buttons might do are not accessable from 
+Problem: It makes the main function very cluttered to do everything in there and some functions that Buttons might do are not accessable from
 
 the Buttons.
 
@@ -76,5 +76,15 @@ class gamestate is the place to store the most important information, there is o
 
 
 
+class MainMenu contains all MainMenu Logic and Navigation between submenus
 
+class Game contains logic for the Game
+
+class Snake dictates the score, tempo, body and direction
+
+class Field contains redundant Information About Snakes Position and Fruits Position 
+
+
+
+&#x20;
 
