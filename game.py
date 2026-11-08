@@ -40,6 +40,7 @@ class Field:
         self.white_list = set([(i,j) for i in range(0, 20) for j in range(0, 20)])
         # Used Locations
         self.black_list = set()
+        self.fruit = None
 
     # Return tuple
     def getRandomDirection(self):
@@ -59,13 +60,17 @@ class Field:
 
     def addFruit(self):
         pos = self.getRandomFreeLocation()
+        self.fruit = pos
         pos_x, pos_y = pos
         self.field[pos_x][pos_y][2] = Field_State.FRUIT
 
-    def removeFruit(self):
-        pos = self.getRandomFreeLocation()
-        pos_x, pos_y = pos
-        self.field[pos_x][pos_y][2] = Field_State.NONE
+    def draw_fruit(self, screen):
+        if self.fruit is None: return
+        pos_x, pos_y, _ = self.field[self.fruit[0]][self.fruit[1]]
+        width, height = self.box_size, self.box_size
+
+        rect = pygame.Rect(pos_x, pos_y, width, height)
+        pygame.draw.rect(screen, pygame.Color("Red"), rect)
 
     def addSnake(self, pos):
         pos_x, pos_y = pos
@@ -91,7 +96,8 @@ class Snake:
         dir = field.getRandomDirection()
 
         #Create Default Snake
-        self.grow(pos)
+        self.body.append(pos)
+        self.field.addSnake(pos)
         self.dir = dir
 
     def draw(self, screen):
@@ -129,6 +135,8 @@ class Snake:
         # Add head to top
         self.body.append(pos)
         self.field.addSnake(pos)
+        self.field.addFruit()
+        self.score += 1
 
 class Game_State(Enum):
     GAME = 0
@@ -225,13 +233,17 @@ class Game(GameMode):
         self.field = Field(self.gamestate)
         self.snake = Snake(self.field)
         self.last_move = pygame.time.get_ticks()
+        print(self.field.fruit)
+        self.field.addFruit()
 
     def gameloop(self):
         # Init Snake and Field
         self.start_game()
         self.snake.draw(self.gamestate.getScreen())
+        self.field.draw_fruit(self.gamestate.getScreen())
 
         while self.getRunning():
+            print(self.field.fruit)
             #Fast Exit when pressing the X in the Right Upper Corner
             if pygame.event.get(pygame.QUIT):
                 print("Press X in Game")
@@ -278,6 +290,7 @@ class Game(GameMode):
                     if pygame.time.get_ticks() - self.last_move > self.snake.tempo:
                         if self.snake.move():
                             self.snake.draw(self.gamestate.getScreen())
+                            self.field.draw_fruit(self.gamestate.getScreen())
                         else:
                             self.game_state = Game_State.GAME_OVER
                         self.last_move = pygame.time.get_ticks()
