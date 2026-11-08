@@ -41,18 +41,19 @@ class Field:
         # Used Locations
         self.black_list = set()
 
+    # Return tuple
     def getRandomDirection(self):
         return random.choice(list(Direction))
 
+    # Return tuple
     def getRandomFreeLocation(self):
         return random.choice(list(self.white_list))
 
-    def addLocation(self, pos=(0, 0)):
+    def addLocation(self, pos):
         self.black_list.add(pos)
-        if pos not in self.white_list: raise ValueError("Invalid Location in whitelist " + str(pos))
         self.white_list.remove(pos)
 
-    def removeLocation(self, pos=(0, 0)):
+    def removeLocation(self, pos):
         self.white_list.add(pos)
         self.black_list.remove(pos)
 
@@ -60,13 +61,11 @@ class Field:
         pos = self.getRandomFreeLocation()
         pos_x, pos_y = pos
         self.field[pos_x][pos_y][2] = Field_State.FRUIT
-        self.addLocation(pos)
 
     def removeFruit(self):
         pos = self.getRandomFreeLocation()
         pos_x, pos_y = pos
         self.field[pos_x][pos_y][2] = Field_State.NONE
-        self.removeLocation(pos)
 
     def addSnake(self, pos):
         pos_x, pos_y = pos
@@ -91,8 +90,7 @@ class Snake:
         dir = field.getRandomDirection()
 
         #Create Default Snake
-        self.body.append(pos)
-        self.field.addSnake(pos)
+        self.grow(pos)
         self.dir = dir
 
     def draw(self, screen):
@@ -106,17 +104,37 @@ class Snake:
             rect = pygame.Rect(pos_x, pos_y, width, height)
             pygame.draw.rect(screen, pygame.Color("Green"), rect)
 
+    # Return True if able to move there, False otherwise
     def move(self):
-        pass
+        curr_head = self.body[-1]
+        curr_dir = self.dir
 
-    def grow(self):
-        pass
+        next_head = (curr_head[0] + curr_dir.value[0], curr_head[1] + curr_dir.value[1])
+        if next_head in self.field.white_list:
+            if self.field.field[next_head[0]][next_head[1]][2] == Field_State.FRUIT:
+                self.grow(next_head)
+            else:
+                # Add head to top
+                self.body.append(next_head)
+                self.field.addSnake(next_head)
+
+                # Remove tail from bottom
+                self.field.removeSnake(self.body.pop(0))
+            return True
+        else:
+            return False
+
+    def grow(self, pos):
+        # Add head to top
+        self.body.append(pos)
+        self.field.addSnake(pos)
 
 class Game_State(Enum):
     GAME = 0
     PAUSE_MENU = 1
     PAUSE_OPTIONS = 2
     GAME_OVER = 3
+    MAIN_MENU = 4
 
 class Game(GameMode):
     def __init__(self, gamestate):
@@ -189,9 +207,8 @@ class Game(GameMode):
 
     def back_to_main_menu(self):
         print("Back to Main Menu")
-        self.game_state = Game_State.GAME
+        self.game_state = Game_State.MAIN_MENU
         main_menu = self.gamestate.getGameMode("MainMenu")
-        if main_menu is None: raise ValueError("MainMenu not found")
         self.setRunning(False)
         main_menu.setRunning(True)
 
@@ -203,9 +220,14 @@ class Game(GameMode):
         print("Back to Pause Menu")
         self.game_state = Game_State.PAUSE_MENU
 
+    def start_game(self):
+        self.game_state = Game_State.GAME
+        self.field = Field(self.gamestate)
+        self.snake = Snake(self.field)
+
     def gameloop(self):
-        field = Field(self.gamestate)
-        snake = Snake(field)
+        # Init Snake and Field
+        self.start_game()
 
         while self.getRunning():
             #Fast Exit when pressing the X in the Right Upper Corner
@@ -241,13 +263,20 @@ class Game(GameMode):
             # Render Screen
             match self.game_state:
                 case Game_State.GAME:
-                    snake.draw(self.gamestate.getScreen())
+                    if self.snake.move():
+                        pygame.time.delay(200)
+                        self.snake.draw(self.gamestate.getScreen())
+                    else:
+                        self.game_state = Game_State.GAME_OVER
                 case Game_State.PAUSE_MENU:
                     self.gamestate.getScreen().blit(self.pause_menu, (0, 0))
                 case Game_State.PAUSE_OPTIONS:
                     self.gamestate.getScreen().blit(self.options_menu, (0, 0))
                 case Game_State.GAME_OVER:
                     self.gamestate.getScreen().blit(self.game_over, (0, 0))
+                case Game_State.MAIN_MENU:
+                    self.game_state = Game_State.GAME
+                    break
 
             #Update the current surface
             pygame.display.flip()
