@@ -224,12 +224,12 @@ class Game(GameMode):
         self.game_state = Game_State.GAME
         self.field = Field(self.gamestate)
         self.snake = Snake(self.field)
+        self.last_move = pygame.time.get_ticks()
 
     def gameloop(self):
         # Init Snake and Field
         self.start_game()
         self.snake.draw(self.gamestate.getScreen())
-        start_time = pygame.time.get_ticks()
 
         while self.getRunning():
             #Fast Exit when pressing the X in the Right Upper Corner
@@ -275,12 +275,12 @@ class Game(GameMode):
             # Render Screen
             match self.game_state:
                 case Game_State.GAME:
-                    if pygame.time.get_ticks() - start_time > self.snake.tempo:
+                    if pygame.time.get_ticks() - self.last_move > self.snake.tempo:
                         if self.snake.move():
                             self.snake.draw(self.gamestate.getScreen())
                         else:
                             self.game_state = Game_State.GAME_OVER
-                        start_time = pygame.time.get_ticks()
+                        self.last_move = pygame.time.get_ticks()
                 case Game_State.PAUSE_MENU:
                     self.gamestate.getScreen().blit(self.pause_menu, (0, 0))
                 case Game_State.PAUSE_OPTIONS:
