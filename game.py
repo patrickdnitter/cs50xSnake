@@ -5,8 +5,6 @@ import pygame
 import button
 import random
 
-from gamestate import GameState
-
 
 # Game Classes
 class Field_State(Enum):
@@ -269,6 +267,8 @@ class Game(GameMode):
                         self.pause_menu_function()
                     elif event.key == pygame.K_l:
                         self.game_over_function()
+                    elif event.key == pygame.K_r:
+                        self.start_game() # Restart Game
                     if self.game_state == Game_State.GAME:
                         if event.key == pygame.K_w:
                             self.snake.dir = Direction.UP
