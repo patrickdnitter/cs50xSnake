@@ -27,14 +27,14 @@ class Field:
         screen = self.gamestate.getScreen()
         width, height = screen.get_size()
         self.field_length = min(width, height)
-        self.box_size = self.field_length // 20
+        self.box_size = self.field_length // 21
 
         # Actual Screen Positions and Value
         self.field = []
         for pos_x in range(20):
             self.field.append([])
-            for pos_y in range(20):
-                self.field[pos_x].append([pos_x*self.box_size, pos_y*self.box_size, Field_State.NONE])
+            for pos_y in range(1,21):
+                self.field[pos_x].append([pos_x*self.box_size + self.box_size//2, pos_y*self.box_size, Field_State.NONE])
 
         # Free Locations with Nothing in it
         self.white_list = set([(i,j) for i in range(0, 20) for j in range(0, 20)])
@@ -233,7 +233,6 @@ class Game(GameMode):
         self.field = Field(self.gamestate)
         self.snake = Snake(self.field)
         self.last_move = pygame.time.get_ticks()
-        print(self.field.fruit)
         self.field.addFruit()
 
     def gameloop(self):
@@ -243,7 +242,6 @@ class Game(GameMode):
         self.field.draw_fruit(self.gamestate.getScreen())
 
         while self.getRunning():
-            print(self.field.fruit)
             #Fast Exit when pressing the X in the Right Upper Corner
             if pygame.event.get(pygame.QUIT):
                 print("Press X in Game")
