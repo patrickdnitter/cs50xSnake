@@ -243,14 +243,15 @@ class Game(GameMode):
                         self.pause_menu_function()
                     elif event.key == pygame.K_l:
                         self.game_over_function()
-                    elif event.key == pygame.K_w:
-                        self.snake.dir = Direction.UP
-                    elif event.key == pygame.K_s:
-                        self.snake.dir = Direction.DOWN
-                    elif event.key == pygame.K_a:
-                        self.snake.dir = Direction.LEFT
-                    elif event.key == pygame.K_d:
-                        self.snake.dir = Direction.RIGHT
+                    if self.game_state == Game_State.GAME:
+                        if event.key == pygame.K_w:
+                            self.snake.dir = Direction.UP
+                        elif event.key == pygame.K_s:
+                            self.snake.dir = Direction.DOWN
+                        elif event.key == pygame.K_a:
+                            self.snake.dir = Direction.LEFT
+                        elif event.key == pygame.K_d:
+                            self.snake.dir = Direction.RIGHT
 
                 # Mouse Event only in Menus
                 elif event.type == pygame.MOUSEBUTTONDOWN:
