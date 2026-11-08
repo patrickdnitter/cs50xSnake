@@ -3,8 +3,114 @@ from gamemode import GameMode
 
 import pygame
 import button
+import random
+
 from gamestate import GameState
 
+
+# Game Classes
+class Field_State(Enum):
+    NONE = 0
+    SNAKE = 1
+    FRUIT = 2
+
+class Direction(Enum):
+    UP = (0,-1)
+    DOWN = (0, 1)
+    LEFT = (-1, 0)
+    RIGHT = (1, 0)
+
+class Field:
+    def __init__(self, gamestate):
+        self.gamestate = gamestate
+
+        screen = self.gamestate.getScreen()
+        width, height = screen.get_size()
+        self.field_length = min(width, height)
+        self.box_size = self.field_length // 20
+
+        # Actual Screen Positions and Value
+        self.field = []
+        for pos_x in range(20):
+            self.field.append([])
+            for pos_y in range(20):
+                self.field[pos_x].append([pos_x*self.box_size, pos_y*self.box_size, Field_State.NONE])
+
+        # Free Locations with Nothing in it
+        self.white_list = set([(i,j) for i in range(0, 20) for j in range(0, 20)])
+        # Used Locations
+        self.black_list = set()
+
+    def getRandomDirection(self):
+        return random.choice(list(Direction))
+
+    def getRandomFreeLocation(self):
+        return random.choice(list(self.white_list))
+
+    def addLocation(self, pos=(0, 0)):
+        self.black_list.add(pos)
+        if pos not in self.white_list: raise ValueError("Invalid Location in whitelist " + str(pos))
+        self.white_list.remove(pos)
+
+    def removeLocation(self, pos=(0, 0)):
+        self.white_list.add(pos)
+        self.black_list.remove(pos)
+
+    def addFruit(self):
+        pos = self.getRandomFreeLocation()
+        pos_x, pos_y = pos
+        self.field[pos_x][pos_y][2] = Field_State.FRUIT
+        self.addLocation(pos)
+
+    def removeFruit(self):
+        pos = self.getRandomFreeLocation()
+        pos_x, pos_y = pos
+        self.field[pos_x][pos_y][2] = Field_State.NONE
+        self.removeLocation(pos)
+
+    def addSnake(self, pos):
+        pos_x, pos_y = pos
+        self.field[pos_x][pos_y][2] = Field_State.SNAKE
+        self.addLocation(pos)
+
+    def removeSnake(self, pos):
+        pos_x, pos_y = self.getRandomFreeLocation()
+        self.field[pos_x][pos_y][2] = Field_State.NONE
+        self.removeLocation(pos)
+
+class Snake:
+    def __init__(self, field):
+        # Queue
+        self.body = []
+        self.dir = Direction.DOWN
+        self.score = 0
+
+        # Choose the First body
+        self.field = field
+        pos = field.getRandomFreeLocation()
+        dir = field.getRandomDirection()
+
+        #Create Default Snake
+        self.body.append(pos)
+        self.field.addSnake(pos)
+        self.dir = dir
+
+    def draw(self, screen):
+        screen.fill(pygame.Color("Black"))
+
+        for pos in self.body:
+            pos_x, pos_y, _ = self.field.field[pos[0]][pos[1]]
+            width = self.field.box_size
+            height = self.field.box_size
+
+            rect = pygame.Rect(pos_x, pos_y, width, height)
+            pygame.draw.rect(screen, pygame.Color("Green"), rect)
+
+    def move(self):
+        pass
+
+    def grow(self):
+        pass
 
 class Game_State(Enum):
     GAME = 0
@@ -98,6 +204,9 @@ class Game(GameMode):
         self.game_state = Game_State.PAUSE_MENU
 
     def gameloop(self):
+        field = Field(self.gamestate)
+        snake = Snake(field)
+
         while self.getRunning():
             #Fast Exit when pressing the X in the Right Upper Corner
             if pygame.event.get(pygame.QUIT):
@@ -132,8 +241,7 @@ class Game(GameMode):
             # Render Screen
             match self.game_state:
                 case Game_State.GAME:
-                    self.gamestate.getScreen().fill(pygame.Color("Black"))
-                    # TODO GameLogic Snake
+                    snake.draw(self.gamestate.getScreen())
                 case Game_State.PAUSE_MENU:
                     self.gamestate.getScreen().blit(self.pause_menu, (0, 0))
                 case Game_State.PAUSE_OPTIONS:
