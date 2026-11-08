@@ -13,7 +13,6 @@ class Game_State(Enum):
     GAME_OVER = 3
 
 class Game(GameMode):
-
     def __init__(self, gamestate):
         super().__init__(gamestate)
 
@@ -66,7 +65,7 @@ class Game(GameMode):
         print("PauseMenu")
         if self.game_state == Game_State.GAME:
             self.game_state = Game_State.PAUSE_MENU
-        else:
+        elif self.game_state != Game_State.GAME_OVER:
             self.game_state = Game_State.GAME
 
     def game_over_function(self):
@@ -108,11 +107,13 @@ class Game(GameMode):
 
             #Functionality for queued events
             for event in pygame.event.get():
+                # Keyboard Events everywhere
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_p:
                         self.pause_menu_function()
                     elif event.key == pygame.K_l:
                         self.game_over_function()
+                # Mouse Event only in Menus
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         mouse_pos = pygame.mouse.get_pos()

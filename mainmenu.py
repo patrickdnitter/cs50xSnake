@@ -13,7 +13,6 @@ class MainMenuState(Enum):
     Options = 2
 
 class MainMenu(GameMode):
-
     def __init__(self, gamestate):
         super().__init__(gamestate)
 
