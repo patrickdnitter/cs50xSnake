@@ -175,7 +175,7 @@ class Game(GameMode):
         self.game_over.fill(pygame.Color("Black"))
 
         # Create GameOver Buttons
-        self.game_over_restart = button.Button(button_x_center, 100, "Restart Game", lambda: print("Restart Game"))
+        self.game_over_restart = button.Button(button_x_center, 100, "Restart Game", self.start_game)
         self.game_over_back_to_main_menu_button = button.Button(button_x_center, 200, "Back to Main Menu", self.back_to_main_menu)
         self.game_over_quit = button.Button(button_x_center, 300, "Quit", self.quit_menu)
 
@@ -183,7 +183,6 @@ class Game(GameMode):
         self.game_over_restart.draw_button(self.game_over)
         self.game_over_back_to_main_menu_button.draw_button(self.game_over)
         self.game_over_quit.draw_button(self.game_over)
-
 
     def pause_menu_function(self):
         print("PauseMenu")
@@ -244,6 +243,15 @@ class Game(GameMode):
                         self.pause_menu_function()
                     elif event.key == pygame.K_l:
                         self.game_over_function()
+                    elif event.key == pygame.K_w:
+                        self.snake.dir = Direction.UP
+                    elif event.key == pygame.K_s:
+                        self.snake.dir = Direction.DOWN
+                    elif event.key == pygame.K_a:
+                        self.snake.dir = Direction.LEFT
+                    elif event.key == pygame.K_d:
+                        self.snake.dir = Direction.RIGHT
+
                 # Mouse Event only in Menus
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
