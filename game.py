@@ -3,6 +3,7 @@ from gamemode import GameMode
 
 import pygame
 import button
+from gamestate import GameState
 
 
 class Game_State(Enum):
@@ -46,12 +47,31 @@ class Game(GameMode):
         # Connect Buttons to OptionsMenu
         self.options_back.draw_button(self.options_menu)
 
+        # Create GameOverMenu
+        self.game_over = pygame.Surface(screen.get_size())
+        self.game_over.fill(pygame.Color("Black"))
+
+        # Create GameOver Buttons
+        self.game_over_restart = button.Button(button_x_center, 100, "Restart Game", lambda: print("Restart Game"))
+        self.game_over_back_to_main_menu_button = button.Button(button_x_center, 200, "Back to Main Menu", self.back_to_main_menu)
+        self.game_over_quit = button.Button(button_x_center, 300, "Quit", self.quit_menu)
+
+        # Connect GameOver Buttons
+        self.game_over_restart.draw_button(self.game_over)
+        self.game_over_back_to_main_menu_button.draw_button(self.game_over)
+        self.game_over_quit.draw_button(self.game_over)
+
+
     def pause_menu_function(self):
         print("PauseMenu")
         if self.game_state == Game_State.GAME:
             self.game_state = Game_State.PAUSE_MENU
         else:
             self.game_state = Game_State.GAME
+
+    def game_over_function(self):
+        print("GameOver")
+        self.game_state = Game_State.GAME_OVER
 
 
     def continue_game(self):
@@ -91,6 +111,8 @@ class Game(GameMode):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_p:
                         self.pause_menu_function()
+                    elif event.key == pygame.K_l:
+                        self.game_over_function()
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         mouse_pos = pygame.mouse.get_pos()
@@ -99,19 +121,24 @@ class Game(GameMode):
                             self.options_button.click(mouse_pos)
                             self.back_to_main_menu_button.click(mouse_pos)
                             self.quit_button.click(mouse_pos)
-                        if self.game_state == Game_State.PAUSE_OPTIONS:
+                        elif self.game_state == Game_State.PAUSE_OPTIONS:
                             self.options_back.click(mouse_pos)
+                        elif self.game_state == Game_State.GAME_OVER:
+                            self.game_over_restart.click(mouse_pos)
+                            self.game_over_back_to_main_menu_button.click(mouse_pos)
+                            self.game_over_quit.click(mouse_pos)
 
             # Render Screen
             match self.game_state:
                 case Game_State.GAME:
                     self.gamestate.getScreen().fill(pygame.Color("Black"))
+                    # TODO GameLogic Snake
                 case Game_State.PAUSE_MENU:
                     self.gamestate.getScreen().blit(self.pause_menu, (0, 0))
                 case Game_State.PAUSE_OPTIONS:
                     self.gamestate.getScreen().blit(self.options_menu, (0, 0))
                 case Game_State.GAME_OVER:
-                    pass
+                    self.gamestate.getScreen().blit(self.game_over, (0, 0))
 
             #Update the current surface
             pygame.display.flip()
