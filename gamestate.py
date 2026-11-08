@@ -1,7 +1,8 @@
 class GameState:
-    def __init__(self, surface, clock):
+    def __init__(self, surface, clock, highscore):
         self.screen = surface
         self.clock = clock
+        self.highscore = highscore
         self.gamemodes = {}
 
     def getScreen(self):

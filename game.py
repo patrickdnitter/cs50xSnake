@@ -5,6 +5,8 @@ import pygame
 import button
 import random
 
+from highscore import Highscore
+
 
 # Game Classes
 class Field_State(Enum):
@@ -207,6 +209,8 @@ class Game(GameMode):
 
     def game_over_function(self):
         print("GameOver")
+        self.gamestate.highscore.addScore("Highscore", self.snake.score)
+        self.gamestate.highscore.save()
         self.game_state = Game_State.GAME_OVER
 
 
@@ -302,7 +306,7 @@ class Game(GameMode):
                         if self.snake.move():
                             self.draw_game()
                         else:
-                            self.game_state = Game_State.GAME_OVER
+                            self.game_over_function()
                         self.last_move = pygame.time.get_ticks()
                 case Game_State.PAUSE_MENU:
                     self.gamestate.getScreen().blit(self.pause_menu, (0, 0))

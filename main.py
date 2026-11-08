@@ -1,6 +1,7 @@
 import pygame
 
 from game import Game
+from highscore import Highscore
 from mainmenu import MainMenu
 from gamestate import GameState
 
@@ -10,9 +11,11 @@ def main():
 
     screen = pygame.display.set_mode((1280, 720)) #Return Surface to draw on
     clock = pygame.time.Clock() # Helper to create tick mainly
+    highscore = Highscore()
+
 
     # Gamestate
-    gamestate = GameState(screen, clock)
+    gamestate = GameState(screen, clock, highscore)
 
     # Main Menu
     main_menu = MainMenu(gamestate)

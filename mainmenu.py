@@ -1,4 +1,6 @@
 from enum import Enum
+
+import table
 from gamemode import GameMode
 
 import button
@@ -67,6 +69,9 @@ class MainMenu(GameMode):
 
     def highscore(self):
         print("Highscore")
+        self.highscores = sorted(self.gamestate.highscore.scores, key=lambda x: int(x["score"]), reverse=True)
+        self.highscore_table = table.Table(count = 3, data = self.highscores)
+        self.highscore_table.draw(self.highscore_menu)
         self.main_menu_state = MainMenuState.Highscore
 
     def options(self):
