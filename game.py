@@ -60,7 +60,6 @@ class Field:
 
     def addFruit(self):
         pos = self.getRandomFreeLocation()
-        print("Fruit: " + str(pos))
         self.fruit = pos
         pos_x, pos_y = pos
         self.field[pos_x][pos_y][2] = Field_State.FRUIT
@@ -74,7 +73,6 @@ class Field:
         pygame.draw.rect(screen, pygame.Color("Red"), rect)
 
     def addSnake(self, pos):
-        print("Snake: " + str(pos))
         pos_x, pos_y = pos
         self.field[pos_x][pos_y][2] = Field_State.SNAKE
         self.addLocation(pos)
@@ -130,7 +128,6 @@ class Snake:
 
                 # Remove tail from bottom
                 pos = self.body.pop(0)
-                print(pos)
                 self.field.removeSnake(pos)
             else:
                 pass
