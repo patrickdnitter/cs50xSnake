@@ -101,8 +101,6 @@ class Snake:
         self.dir = dir
 
     def draw(self, screen):
-        screen.fill(pygame.Color("Black"))
-
         for pos in self.body:
             pos_x, pos_y, _ = self.field.field[pos[0]][pos[1]]
             width = self.field.box_size
@@ -151,6 +149,9 @@ class Game(GameMode):
 
         screen = gamestate.getScreen()
         self.game_state = Game_State.GAME
+
+        # Score Board
+        self.font = pygame.font.SysFont("Times New Roman", 20)
 
         # Create PauseMenu
         self.pause_menu = pygame.Surface(screen.get_size())
@@ -235,11 +236,17 @@ class Game(GameMode):
         self.last_move = pygame.time.get_ticks()
         self.field.addFruit()
 
+    def draw_game(self):
+        text_img = self.font.render("Score: " + str(self.snake.score), True, "White")
+        self.gamestate.getScreen().fill(pygame.Color("Black"))
+        self.gamestate.getScreen().blit(text_img, (0, 0))
+        self.snake.draw(self.gamestate.getScreen())
+        self.field.draw_fruit(self.gamestate.getScreen())
+
     def gameloop(self):
         # Init Snake and Field
         self.start_game()
-        self.snake.draw(self.gamestate.getScreen())
-        self.field.draw_fruit(self.gamestate.getScreen())
+        self.draw_game()
 
         while self.getRunning():
             #Fast Exit when pressing the X in the Right Upper Corner
@@ -287,8 +294,7 @@ class Game(GameMode):
                 case Game_State.GAME:
                     if pygame.time.get_ticks() - self.last_move > self.snake.tempo:
                         if self.snake.move():
-                            self.snake.draw(self.gamestate.getScreen())
-                            self.field.draw_fruit(self.gamestate.getScreen())
+                            self.draw_game()
                         else:
                             self.game_state = Game_State.GAME_OVER
                         self.last_move = pygame.time.get_ticks()
