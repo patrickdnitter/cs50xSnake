@@ -60,6 +60,7 @@ class Field:
 
     def addFruit(self):
         pos = self.getRandomFreeLocation()
+        print("Fruit: " + str(pos))
         self.fruit = pos
         pos_x, pos_y = pos
         self.field[pos_x][pos_y][2] = Field_State.FRUIT
@@ -73,12 +74,13 @@ class Field:
         pygame.draw.rect(screen, pygame.Color("Red"), rect)
 
     def addSnake(self, pos):
+        print("Snake: " + str(pos))
         pos_x, pos_y = pos
         self.field[pos_x][pos_y][2] = Field_State.SNAKE
         self.addLocation(pos)
 
     def removeSnake(self, pos):
-        pos_x, pos_y = self.getRandomFreeLocation()
+        pos_x, pos_y = pos
         self.field[pos_x][pos_y][2] = Field_State.NONE
         self.removeLocation(pos)
 
@@ -88,7 +90,7 @@ class Snake:
         self.body = []
         self.dir = Direction.DOWN
         self.score = 0
-        self.tempo = 500
+        self.tempo = 300 # Less than 60 FPS
 
         # Choose the First body
         self.field = field
@@ -99,6 +101,9 @@ class Snake:
         self.body.append(pos)
         self.field.addSnake(pos)
         self.dir = dir
+
+    def getCurrentTempo(self):
+        return self.tempo
 
     def draw(self, screen):
         for pos in self.body:
@@ -118,13 +123,17 @@ class Snake:
         if next_head in self.field.white_list:
             if self.field.field[next_head[0]][next_head[1]][2] == Field_State.FRUIT:
                 self.grow(next_head)
-            else:
+            elif self.field.field[next_head[0]][next_head[1]][2] == Field_State.NONE:
                 # Add head to top
                 self.body.append(next_head)
                 self.field.addSnake(next_head)
 
                 # Remove tail from bottom
-                self.field.removeSnake(self.body.pop(0))
+                pos = self.body.pop(0)
+                print(pos)
+                self.field.removeSnake(pos)
+            else:
+                pass
             return True
         else:
             return False
@@ -292,7 +301,7 @@ class Game(GameMode):
             # Render Screen
             match self.game_state:
                 case Game_State.GAME:
-                    if pygame.time.get_ticks() - self.last_move > self.snake.tempo:
+                    if pygame.time.get_ticks() - self.last_move > self.snake.getCurrentTempo():
                         if self.snake.move():
                             self.draw_game()
                         else:
