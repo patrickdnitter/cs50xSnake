@@ -76,13 +76,29 @@ class gamestate is the place to store the most important information, there is o
 
 
 
+Actual Game Implementation and Navigation:
+
 class MainMenu contains all MainMenu Logic and Navigation between submenus
 
-class Game contains logic for the Game
+class Game contains logic for the Game and Navigation between submenus
 
 class Snake dictates the score, tempo, body and direction
 
 class Field contains redundant Information About Snakes Position and Fruits Position 
+
+
+
+Enum:
+
+class MainMenuState
+
+class Field\_State
+
+class Direction
+
+class Game\_State
+
+
 
 
 
