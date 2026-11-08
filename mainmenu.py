@@ -14,7 +14,6 @@ class MainMenuState(Enum):
 
 class MainMenu(GameMode):
 
-    # Add the Buttons in the Constructor
     def __init__(self, gamestate):
         super().__init__(gamestate)
 
@@ -62,7 +61,10 @@ class MainMenu(GameMode):
     def start_game(self):
         print("Start Game")
         self.setRunning(False)
-        # TODO Start Game GameMode
+        game = self.gamestate.getGameMode("Game")
+        if game is None: raise ValueError("GameMode Game not found.")
+        self.setRunning(False)
+        game.setRunning(True)
 
     def highscore(self):
         print("Highscore")

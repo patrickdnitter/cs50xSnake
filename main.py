@@ -1,4 +1,6 @@
 import pygame
+
+from game import Game
 from mainmenu import MainMenu
 from gamestate import GameState
 
@@ -16,6 +18,10 @@ def main():
     main_menu = MainMenu(gamestate)
     gamestate.addGameMode("MainMenu", main_menu)
 
+    # Game
+    game = Game(gamestate)
+    gamestate.addGameMode("Game", game)
+
     # Start with MainMenu
     main_menu.setRunning(True)
     while gamestate.getStillRunning():
@@ -25,6 +31,8 @@ def main():
 
         if main_menu.getRunning():
             main_menu.gameloop()
+        elif game.getRunning():
+            game.gameloop()
 
     pygame.quit() # Uninitialize all pygame modules
 
