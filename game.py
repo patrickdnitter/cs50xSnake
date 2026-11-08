@@ -83,6 +83,7 @@ class Snake:
         self.body = []
         self.dir = Direction.DOWN
         self.score = 0
+        self.tempo = 500
 
         # Choose the First body
         self.field = field
@@ -227,6 +228,8 @@ class Game(GameMode):
     def gameloop(self):
         # Init Snake and Field
         self.start_game()
+        self.snake.draw(self.gamestate.getScreen())
+        start_time = pygame.time.get_ticks()
 
         while self.getRunning():
             #Fast Exit when pressing the X in the Right Upper Corner
@@ -272,11 +275,12 @@ class Game(GameMode):
             # Render Screen
             match self.game_state:
                 case Game_State.GAME:
-                    if self.snake.move():
-                        pygame.time.delay(200)
-                        self.snake.draw(self.gamestate.getScreen())
-                    else:
-                        self.game_state = Game_State.GAME_OVER
+                    if pygame.time.get_ticks() - start_time > self.snake.tempo:
+                        if self.snake.move():
+                            self.snake.draw(self.gamestate.getScreen())
+                        else:
+                            self.game_state = Game_State.GAME_OVER
+                        start_time = pygame.time.get_ticks()
                 case Game_State.PAUSE_MENU:
                     self.gamestate.getScreen().blit(self.pause_menu, (0, 0))
                 case Game_State.PAUSE_OPTIONS:
