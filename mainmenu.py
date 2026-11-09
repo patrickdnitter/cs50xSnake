@@ -14,9 +14,9 @@ class MainMenu(GameMode):
         super().__init__(main_gamestate)
 
         # Presets
-        screen = self.getGameState().getScreen()
         self.main_menu_state = MainMenuState.MainMenu
 
+        screen = self.getGameState().getScreen()
         button_width = 200
         button_x_center = screen.get_width() // 2 - button_width//2
 
@@ -37,21 +37,26 @@ class MainMenu(GameMode):
         self.highscore_button.draw_button(self.main_menu, "Highscore")
         self.quit_button.draw_button(self.main_menu,"Quit")
 
-        self.highscore_back.draw_button(self.highscore_menu, "Back to Main Menu")
-
     def start_game(self):
         print("Start Game")
         game = self.getGameState().getGameMode("MainGame")
         if game is None: raise ValueError("GameMode Game not found.")
-
         self.setRunning(False)
         game.setRunning(True)
 
     def highscore(self):
         print("Highscore")
-        self.highscores = self.getGameState().getScores()
-        self.highscore_table = table.Table(count = 3, data = self.highscores)
-        self.highscore_table.draw(self.highscore_menu)
+        highscores = self.getGameState().getScores()
+
+        screen = self.getGameState().getScreen()
+        table_width = 200
+        table_x_center = screen.get_width() // 2 - table_width // 2
+
+        highscore_table = table.Table(table_x_center, 100, table_width, 50, data= highscores)
+        highscore_table.draw(self.highscore_menu, self.getGameState(), 5)
+
+        self.highscore_back.draw_button(self.highscore_menu, "Back to Main Menu")
+
         self.main_menu_state = MainMenuState.Highscore
 
     def quit(self):
