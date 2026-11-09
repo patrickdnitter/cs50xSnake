@@ -4,7 +4,7 @@ class GameMode:
         self.running = False
 
     def getGameState(self):
-        return self.gamestate
+        return self.main_gamestate
 
     def getRunning(self):
         return self.running

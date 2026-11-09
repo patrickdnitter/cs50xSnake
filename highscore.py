@@ -10,7 +10,7 @@ class Highscore:
 
     # Reduces the length and sortes the array reversed
     def reduceScores(self, length):
-        self.scores.sort(key=lambda x: x["score"], reverse=True)
+        self.scores.sort(key=lambda x: int(x["score"]), reverse=True)
         self.scores = self.scores[:length]
 
     # Insert a new score than reduce it to top 10 if scores contains more 10

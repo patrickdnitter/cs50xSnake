@@ -21,8 +21,8 @@ class GameState:
     def fillScreen(self, color):
         self.screen.fill(color)
 
-    def getScore(self):
-        return self.highscore.getScore()
+    def getScores(self):
+        return self.highscore.getScores()
     def addScore(self, name, score):
         self.highscore.addScore(name, score)
     def saveHighscore(self):

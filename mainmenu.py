@@ -1,82 +1,58 @@
-from enum import Enum
-
 import table
-from gamemode import GameMode
-
 import button
 import pygame
 
-from gamestate import GameState
-
+from enum import Enum
+from gamemode import GameMode
 
 class MainMenuState(Enum):
     MainMenu = 0
     Highscore = 1
-    Options = 2
 
 class MainMenu(GameMode):
-    def __init__(self, gamestate):
-        super().__init__(gamestate)
+    def __init__(self, main_gamestate):
+        super().__init__(main_gamestate)
 
-        screen = gamestate.getScreen()
+        # Presets
+        screen = self.getGameState().getScreen()
         self.main_menu_state = MainMenuState.MainMenu
 
-        # Create MainMenu
+        button_width = 200
+        button_x_center = screen.get_width() // 2 - button_width//2
+
+        # Create Surface
         self.main_menu = pygame.Surface(screen.get_size())
         self.main_menu.fill("White")
-
-        # Create Main Menu Buttons
-        button_x_center = screen.get_width() // 2 - 100
-        self.start_game_button = button.Button(button_x_center, 100, "Start Game", self.start_game)
-        self.highscore_button = button.Button(button_x_center, 200, "Highscore", self.highscore)
-        self.options_button = button.Button(button_x_center, 300, "Options", self.options)
-        self.quit_button = button.Button(button_x_center, 400, "Quit", self.quit)
-
-        # Connect Buttons to MainMenu
-        self.start_game_button.draw_button(self.main_menu)
-        self.highscore_button.draw_button(self.main_menu)
-        self.options_button.draw_button(self.main_menu)
-        self.quit_button.draw_button(self.main_menu)
-
-        # Create HighscoreMenu
         self.highscore_menu = pygame.Surface(screen.get_size())
         self.highscore_menu.fill("White")
 
-        # Create Highscore Buttons
-        self.highscore_back = button.Button(button_x_center, 400, "Back", self.back_to_main_menu)
+        # Create Buttons
+        self.start_game_button = button.Button(button_x_center, 100, button_width)
+        self.highscore_button = button.Button(button_x_center, 200, button_width)
+        self.highscore_back = button.Button(button_x_center, 400, button_width)
+        self.quit_button = button.Button(button_x_center, 300, button_width)
 
-        # Connect Buttons to HighscoreMenu
-        self.highscore_back.draw_button(self.highscore_menu)
+        # Connect Buttons to Surface
+        self.start_game_button.draw_button(self.main_menu, "Start Game")
+        self.highscore_button.draw_button(self.main_menu, "Highscore")
+        self.quit_button.draw_button(self.main_menu,"Quit")
 
-        # Create OptionsMenu
-        self.options_menu = pygame.Surface(screen.get_size())
-        self.options_menu.fill("White")
-
-        # Create Options Buttons
-        self.options_back = button.Button(button_x_center, 400, "Back", self.back_to_main_menu)
-
-        # Connect Buttons to OptionsMenu
-        self.options_back.draw_button(self.options_menu)
-
+        self.highscore_back.draw_button(self.highscore_menu, "Back to Main Menu")
 
     def start_game(self):
         print("Start Game")
-        self.setRunning(False)
-        game = self.main_gamestate.getGameMode("MainGame")
+        game = self.getGameState().getGameMode("MainGame")
         if game is None: raise ValueError("GameMode Game not found.")
+
         self.setRunning(False)
         game.setRunning(True)
 
     def highscore(self):
         print("Highscore")
-        self.highscores = self.main_gamestate.getScore()
+        self.highscores = self.getGameState().getScores()
         self.highscore_table = table.Table(count = 3, data = self.highscores)
         self.highscore_table.draw(self.highscore_menu)
         self.main_menu_state = MainMenuState.Highscore
-
-    def options(self):
-        print("Options")
-        self.main_menu_state = MainMenuState.Options
 
     def quit(self):
         print("Quit")
@@ -100,27 +76,22 @@ class MainMenu(GameMode):
                     if event.button == 1:
                         mouse_pos = pygame.mouse.get_pos()
                         if self.main_menu_state == MainMenuState.MainMenu:
-                            self.start_game_button.click(mouse_pos)
-                            self.highscore_button.click(mouse_pos)
-                            self.options_button.click(mouse_pos)
-                            self.quit_button.click(mouse_pos)
+                            self.start_game_button.click(mouse_pos, self.start_game)
+                            self.highscore_button.click(mouse_pos, self.highscore)
+                            self.quit_button.click(mouse_pos, self.quit)
                         elif self.main_menu_state == MainMenuState.Highscore:
-                            self.highscore_back.click(mouse_pos)
-                        elif self.main_menu_state == MainMenuState.Options:
-                            self.options_back.click(mouse_pos)
+                            self.highscore_back.click(mouse_pos, self.back_to_main_menu)
 
             # Render Menu
             match self.main_menu_state:
                 case MainMenuState.MainMenu:
-                    self.main_gamestate.blitScreen(self.main_menu, (0, 0))
+                    self.getGameState().blitScreen(self.main_menu, (0, 0))
                 case MainMenuState.Highscore:
-                    self.main_gamestate.blitScreen(self.highscore_menu, (0, 0))
-                case MainMenuState.Options:
-                    self.main_gamestate.blitScreen(self.options_menu, (0, 0))
+                    self.getGameState().blitScreen(self.highscore_menu, (0, 0))
 
 
             # Update the current surface
             pygame.display.flip()
 
             # Limit FPS to 60
-            self.main_gamestate.tick(60)
+            self.getGameState().tick(60)
