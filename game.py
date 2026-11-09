@@ -5,6 +5,7 @@ import pygame
 import button
 import random
 
+from gamestate import GameState
 from highscore import Highscore
 
 
@@ -21,10 +22,10 @@ class Direction(Enum):
     RIGHT = (1, 0)
 
 class Field:
-    def __init__(self, gamestate):
-        self.gamestate = gamestate
+    def __init__(self, main_gamestate):
+        self.main_gamestate = main_gamestate
 
-        screen = self.gamestate.getScreen()
+        screen = self.main_gamestate.getScreen()
         width, height = screen.get_size()
         self.field_length = min(width, height)
         self.box_size = self.field_length // 21
@@ -209,8 +210,8 @@ class Game(GameMode):
 
     def game_over_function(self):
         print("GameOver")
-        self.gamestate.highscore.addScore("Highscore", self.snake.score)
-        self.gamestate.highscore.save()
+        self.main_gamestate.addScore("Highscore", self.snake.score)
+        self.main_gamestate.saveHighscore()
         self.game_state = Game_State.GAME_OVER
 
 
@@ -225,7 +226,7 @@ class Game(GameMode):
     def back_to_main_menu(self):
         print("Back to Main Menu")
         self.game_state = Game_State.MAIN_MENU
-        main_menu = self.gamestate.getGameMode("MainMenu")
+        main_menu = self.main_gamestate.getGameMode("MainMenu")
         self.setRunning(False)
         main_menu.setRunning(True)
 
@@ -239,17 +240,17 @@ class Game(GameMode):
 
     def start_game(self):
         self.game_state = Game_State.GAME
-        self.field = Field(self.gamestate)
+        self.field = Field(self.main_gamestate)
         self.snake = Snake(self.field)
         self.last_move = pygame.time.get_ticks()
         self.field.addFruit()
 
     def draw_game(self):
         text_img = self.font.render("Score: " + str(self.snake.score), True, "White")
-        self.gamestate.getScreen().fill(pygame.Color("Black"))
-        self.gamestate.getScreen().blit(text_img, (0, 0))
-        self.snake.draw(self.gamestate.getScreen())
-        self.field.draw_fruit(self.gamestate.getScreen())
+        self.main_gamestate.fillScreen(pygame.Color("Black"))
+        self.main_gamestate.blitScreen(text_img, (0, 0))
+        self.snake.draw(self.main_gamestate.getScreen())
+        self.field.draw_fruit(self.main_gamestate.getScreen())
 
     def gameloop(self):
         # Init Snake and Field
@@ -309,11 +310,11 @@ class Game(GameMode):
                             self.game_over_function()
                         self.last_move = pygame.time.get_ticks()
                 case Game_State.PAUSE_MENU:
-                    self.gamestate.getScreen().blit(self.pause_menu, (0, 0))
+                    self.main_gamestate.blitScreen(self.pause_menu, (0, 0))
                 case Game_State.PAUSE_OPTIONS:
-                    self.gamestate.getScreen().blit(self.options_menu, (0, 0))
+                    self.main_gamestate.blitScreen(self.options_menu, (0, 0))
                 case Game_State.GAME_OVER:
-                    self.gamestate.getScreen().blit(self.game_over, (0, 0))
+                    self.main_gamestate.blitScreen(self.game_over, (0, 0))
                 case Game_State.MAIN_MENU:
                     self.game_state = Game_State.GAME
                     break
@@ -322,4 +323,4 @@ class Game(GameMode):
             pygame.display.flip()
 
             # Limit FPS to 60
-            self.gamestate.getClock().tick(60)
+            self.main_gamestate.tick(60)

@@ -62,14 +62,14 @@ class MainMenu(GameMode):
     def start_game(self):
         print("Start Game")
         self.setRunning(False)
-        game = self.gamestate.getGameMode("Game")
+        game = self.main_gamestate.getGameMode("MainGame")
         if game is None: raise ValueError("GameMode Game not found.")
         self.setRunning(False)
         game.setRunning(True)
 
     def highscore(self):
         print("Highscore")
-        self.highscores = sorted(self.gamestate.highscore.scores, key=lambda x: int(x["score"]), reverse=True)
+        self.highscores = self.main_gamestate.getScore()
         self.highscore_table = table.Table(count = 3, data = self.highscores)
         self.highscore_table.draw(self.highscore_menu)
         self.main_menu_state = MainMenuState.Highscore
@@ -112,15 +112,15 @@ class MainMenu(GameMode):
             # Render Menu
             match self.main_menu_state:
                 case MainMenuState.MainMenu:
-                    self.gamestate.getScreen().blit(self.main_menu, (0, 0))
+                    self.main_gamestate.blitScreen(self.main_menu, (0, 0))
                 case MainMenuState.Highscore:
-                    self.gamestate.getScreen().blit(self.highscore_menu, (0, 0))
+                    self.main_gamestate.blitScreen(self.highscore_menu, (0, 0))
                 case MainMenuState.Options:
-                    self.gamestate.getScreen().blit(self.options_menu, (0, 0))
+                    self.main_gamestate.blitScreen(self.options_menu, (0, 0))
 
 
             # Update the current surface
             pygame.display.flip()
 
             # Limit FPS to 60
-            self.gamestate.getClock().tick(60)
+            self.main_gamestate.tick(60)

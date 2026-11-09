@@ -31,7 +31,7 @@ def main():
 
     # Start with MainMenu
     main_menu.setRunning(True)
-    while main_gamestate.getStillRunning():
+    while main_gamestate.isRunning():
         if main_menu.getRunning():
             main_menu.gameloop()
         elif main_game.getRunning():
