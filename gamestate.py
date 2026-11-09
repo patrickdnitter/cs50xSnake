@@ -31,10 +31,7 @@ class GameState:
     def tick(self, value):
         self.clock.tick(60)
 
-
-
-
-    # GameMode
+    # GameMde
     def getGameMode(self, name):
         if name in self.gamemodes:
             return self.gamemodes[name]
